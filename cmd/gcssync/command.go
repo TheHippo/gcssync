@@ -14,6 +14,7 @@ const (
 	errorAuthInfo    = iota
 	errorProjectInfo = iota
 	errorClientInit  = iota
+	errorUploadFiles = iota
 )
 
 const (
@@ -73,6 +74,12 @@ func main() {
 			Usage:     "List remote files",
 			Action:    listFiles,
 		},
+		{
+			Name:      "upload",
+			ShortName: "u",
+			Usage:     "Upload a single file",
+			Action:    uploadFile,
+		},
 	}
 	app.Run(os.Args)
 }
@@ -113,7 +120,7 @@ func generateServiceConfig(c *cli.Context) (*gcssync.ServiceConfig, error) {
 	}, nil
 }
 
-func listFiles(c *cli.Context) {
+func getClient(c *cli.Context) *gcssync.Client {
 	oauthConfig, err := generateOAuthConfig(c)
 	if err != nil {
 		fmt.Println("Missing auth informations", err.Error())
@@ -131,6 +138,20 @@ func listFiles(c *cli.Context) {
 		os.Exit(errorClientInit)
 	}
 
-	client.ListFiles()
+	return client
+}
 
+func listFiles(c *cli.Context) {
+	client := getClient(c)
+	client.ListFiles()
+}
+
+func uploadFile(c *cli.Context) {
+	client := getClient(c)
+	if len(c.Args()) != 2 {
+		fmt.Println("Need local and remote name!")
+		os.Exit(errorUploadFiles)
+	}
+
+	client.UploadFile(c.Args().Get(0), c.Args().Get(1))
 }
