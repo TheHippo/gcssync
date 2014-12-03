@@ -38,6 +38,8 @@ func getLocalFiles(dirname string) []fileInfo {
 	}()
 
 	result := make([]fileInfo, 0, fileWalkerEstimate)
+
+	// this is unnecessary, but left there in case filters for files will be implemented
 	done.Add(1)
 	go func() {
 		for {
