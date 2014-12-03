@@ -180,7 +180,16 @@ func uploadFile(c *cli.Context) {
 		os.Exit(errorUploadFiles)
 	}
 
-	client.UploadFile(c.Args().Get(0), c.Args().Get(1))
+	success, object, err := client.UploadFile(c.Args().Get(0), c.Args().Get(1))
+	if !success {
+		fmt.Println(err.Error())
+		os.Exit(errorUploadFiles)
+		return
+	}
+
+	fmt.Printf("Uploaded file to %s\n", client.GetBucketname())
+	fmt.Printf("%s %s\n", object.Name, humanize.Bytes(object.Size))
+
 }
 
 func syncFolder(c *cli.Context) {
