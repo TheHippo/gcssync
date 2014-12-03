@@ -129,7 +129,7 @@ func (c *Client) SyncFolder(from, to string) {
 		uploadDone.Done()
 	}()
 
-	var transferedBytes uint64 = 0
+	var transferedBytes uint64
 	transfered := make(chan uint64)
 
 	go func() {
