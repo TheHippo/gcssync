@@ -16,7 +16,7 @@ type ServiceConfig struct {
 // Client is connected to Google Cloud Storage bucket
 type Client struct {
 	service    *storage.Service
-	projectId  string
+	projectID  string
 	bucketName string
 }
 
@@ -59,7 +59,7 @@ func NewClient(oauthConfig *oauth.Config, authCode string, serviceConfig *Servic
 
 	return &Client{
 		service:    service,
-		projectId:  serviceConfig.ProjectID,
+		projectID:  serviceConfig.ProjectID,
 		bucketName: serviceConfig.BucketName,
 	}, nil
 }
