@@ -4,9 +4,11 @@ import (
 	"code.google.com/p/goauth2/oauth"
 	"code.google.com/p/google-api-go-client/storage/v1"
 	"fmt"
+	"github.com/TheHippo/gcssync"
 	"github.com/codegangsta/cli"
-	"github.com/consulted/gcssync"
+	"github.com/dustin/go-humanize"
 	"os"
+	"path/filepath"
 )
 
 const (
@@ -14,7 +16,9 @@ const (
 	errorAuthInfo    = iota
 	errorProjectInfo = iota
 	errorClientInit  = iota
+	errorListFiles   = iota
 	errorUploadFiles = iota
+	errorSyncFiles   = iota
 )
 
 const (
@@ -80,6 +84,12 @@ func main() {
 			Usage:     "Upload a single file",
 			Action:    uploadFile,
 		},
+		{
+			Name:      "sync",
+			ShortName: "s",
+			Usage:     "Syncs a folder to a Google Cloudstorage bucket",
+			Action:    syncFolder,
+		},
 	}
 	app.Run(os.Args)
 }
@@ -143,7 +153,16 @@ func getClient(c *cli.Context) *gcssync.Client {
 
 func listFiles(c *cli.Context) {
 	client := getClient(c)
-	client.ListFiles()
+	files, err := client.ListFiles()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(errorListFiles)
+		return
+	}
+	fmt.Printf("Objects in %s - %d\n", client.GetBucketname(), len(files.Items))
+	for _, object := range files.Items {
+		fmt.Printf("%s %s\n", object.Name, humanize.Bytes(object.Size))
+	}
 }
 
 func uploadFile(c *cli.Context) {
@@ -153,5 +172,39 @@ func uploadFile(c *cli.Context) {
 		os.Exit(errorUploadFiles)
 	}
 
-	client.UploadFile(c.Args().Get(0), c.Args().Get(1))
+	success, object, err := client.UploadFile(c.Args().Get(0), c.Args().Get(1))
+	if !success {
+		fmt.Println(err.Error())
+		os.Exit(errorUploadFiles)
+		return
+	}
+
+	fmt.Printf("Uploaded file to %s\n", client.GetBucketname())
+	fmt.Printf("%s %s\n", object.Name, humanize.Bytes(object.Size))
+
+}
+
+func syncFolder(c *cli.Context) {
+	client := getClient(c)
+	var local, remote string
+	switch len(c.Args()) {
+	case 0:
+		local = ""
+		remote = ""
+	case 1:
+		local = c.Args().Get(0)
+		remote = ""
+	case 2:
+		local = c.Args().Get(0)
+		remote = c.Args().Get(1)
+	default:
+		fmt.Println("To many arguments")
+		os.Exit(errorSyncFiles)
+	}
+	local, err := filepath.Abs(local)
+	if err != nil {
+		fmt.Println("Could not get absolute path")
+		os.Exit(errorSyncFiles)
+	}
+	client.SyncFolder(local, remote)
 }

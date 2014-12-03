@@ -18,6 +18,10 @@ type Client struct {
 	bucketName string
 }
 
+func (c *Client) GetBucketname() string {
+	return c.bucketName
+}
+
 func NewClient(oauthConfig *oauth.Config, authCode string, serviceConfig *ServiceConfig) (*Client, error) {
 	transport := &oauth.Transport{
 		Config:    oauthConfig,

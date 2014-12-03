@@ -3,15 +3,12 @@ package gcssync
 import (
 	"code.google.com/p/google-api-go-client/storage/v1"
 	"fmt"
-	"github.com/dustin/go-humanize"
 	"os"
 )
 
-func (c *Client) UploadFile(localName, targetName string) {
-	fmt.Println("ok")
+func (c *Client) UploadFile(localName, targetName string) (bool, *storage.Object, error) {
 	if _, err := os.Stat(localName); err != nil {
-		fmt.Println("Local file not accessible")
-		return
+		return false, nil, fmt.Errorf("Local file %s not accessible", localName)
 	}
 	object := &storage.Object{
 		Name: targetName,
@@ -26,14 +23,12 @@ func (c *Client) UploadFile(localName, targetName string) {
 	}
 	file, err := os.Open(localName)
 	if err != nil {
-		fmt.Println("Could not open", localName)
-		return
+		return false, nil, fmt.Errorf("Could not open %s", localName)
 	}
 
 	if res, err := c.service.Objects.Insert(c.bucketName, object).Media(file).Do(); err == nil {
-		fmt.Printf("Uploaded: %s %s %s", res.Name, humanize.Bytes(res.Size), res.SelfLink)
+		return true, res, nil
 	} else {
-		fmt.Println("Could not upload file: ", err.Error())
-		return
+		return false, nil, fmt.Errorf("Error while uploading file: %s", err.Error())
 	}
 }
