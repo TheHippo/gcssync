@@ -20,7 +20,7 @@ type Client struct {
 	bucketName string
 }
 
-// GetBucketName return the name of the bucket the client is connected to
+// GetBucketname return the name of the bucket the client is connected to
 func (c *Client) GetBucketname() string {
 	return c.bucketName
 }
