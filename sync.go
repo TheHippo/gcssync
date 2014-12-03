@@ -129,6 +129,15 @@ func (c *Client) SyncFolder(from, to string) {
 		uploadDone.Done()
 	}()
 
+	var transferedBytes uint64 = 0
+	transfered := make(chan uint64)
+
+	go func() {
+		for {
+			transferedBytes += <-transfered
+		}
+	}()
+
 	for i := 0; i < uploadGoroutinesNum; i++ {
 		uploadDone.Add(1)
 		go func() {
@@ -143,6 +152,7 @@ func (c *Client) SyncFolder(from, to string) {
 					if err != nil || success == false {
 						fmt.Println(err)
 					} else {
+						transfered <- object.Size
 						fmt.Printf("Uploaded %s %s\n", object.Name, humanize.Bytes(object.Size))
 					}
 				} else {
@@ -155,6 +165,6 @@ func (c *Client) SyncFolder(from, to string) {
 
 	uploadDone.Wait()
 
-	fmt.Printf("Todo: %d\n", len(toDo))
+	fmt.Printf("Processed %d files, uploaded %s\n", len(toDo), humanize.Bytes(transferedBytes))
 	fmt.Printf("Already uploaded: %d, newly created: %d, updated: %d\n", already, created, update)
 }
