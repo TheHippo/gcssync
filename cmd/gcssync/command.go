@@ -7,6 +7,7 @@ import (
 	"github.com/codegangsta/cli"
 	"github.com/consulted/gcssync"
 	"os"
+	"path/filepath"
 )
 
 const (
@@ -15,6 +16,7 @@ const (
 	errorProjectInfo = iota
 	errorClientInit  = iota
 	errorUploadFiles = iota
+	errorSyncFiles   = iota
 )
 
 const (
@@ -79,6 +81,20 @@ func main() {
 			ShortName: "u",
 			Usage:     "Upload a single file",
 			Action:    uploadFile,
+		},
+		{
+			Name:      "sync",
+			ShortName: "s",
+			Usage:     "Syncs a folder to a Google Cloudstorage bucket",
+			Action:    syncFolder,
+			// Flags: []cli.Flag{
+			// 	cli.StringFlag{
+			// 		Name:   "exclude,e",
+			// 		Value:  "",
+			// 		Usage:  "Exclude files matching this pattern",
+			// 		EnvVar: "EXCLUDE_FILES",
+			// 	},
+			// },
 		},
 	}
 	app.Run(os.Args)
@@ -154,4 +170,29 @@ func uploadFile(c *cli.Context) {
 	}
 
 	client.UploadFile(c.Args().Get(0), c.Args().Get(1))
+}
+
+func syncFolder(c *cli.Context) {
+	client := getClient(c)
+	var local, remote string
+	switch len(c.Args()) {
+	case 0:
+		local = ""
+		remote = ""
+	case 1:
+		local = c.Args().Get(0)
+		remote = ""
+	case 2:
+		local = c.Args().Get(0)
+		remote = c.Args().Get(1)
+	default:
+		fmt.Println("To many arguments")
+		os.Exit(errorSyncFiles)
+	}
+	local, err := filepath.Abs(local)
+	if err != nil {
+		fmt.Println("Could not get absolute path")
+		os.Exit(errorSyncFiles)
+	}
+	client.SyncFolder(local, remote /*c.String("exclude") */)
 }
