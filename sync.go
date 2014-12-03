@@ -43,7 +43,6 @@ func getLocalFiles(dirname string) []fileInfo {
 		for {
 			f, more := <-rawFiles
 			if more {
-				// fmt.Println(f.path)
 				result = append(result, f)
 			} else {
 				done.Done()

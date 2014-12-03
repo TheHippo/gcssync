@@ -89,14 +89,6 @@ func main() {
 			ShortName: "s",
 			Usage:     "Syncs a folder to a Google Cloudstorage bucket",
 			Action:    syncFolder,
-			// Flags: []cli.Flag{
-			// 	cli.StringFlag{
-			// 		Name:   "exclude,e",
-			// 		Value:  "",
-			// 		Usage:  "Exclude files matching this pattern",
-			// 		EnvVar: "EXCLUDE_FILES",
-			// 	},
-			// },
 		},
 	}
 	app.Run(os.Args)
@@ -214,5 +206,5 @@ func syncFolder(c *cli.Context) {
 		fmt.Println("Could not get absolute path")
 		os.Exit(errorSyncFiles)
 	}
-	client.SyncFolder(local, remote /*c.String("exclude") */)
+	client.SyncFolder(local, remote)
 }
