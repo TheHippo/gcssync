@@ -28,7 +28,6 @@ func (c *Client) UploadFile(localName, targetName string) (bool, *storage.Object
 
 	if res, err := c.service.Objects.Insert(c.bucketName, object).Media(file).Do(); err == nil {
 		return true, res, nil
-	} else {
-		return false, nil, fmt.Errorf("Error while uploading file: %s", err.Error())
 	}
+	return false, nil, fmt.Errorf("Error while uploading file: %s", err.Error())
 }
