@@ -8,7 +8,9 @@
 <!-- /MarkdownTOC -->
 
 
-Syncs files with a Google Cloud Storage bucket
+Syncs files with a Google Cloud Storage bucket.
+
+When syncing it checks for modifcation and update time to prevent uploading files in the next run.
 
 
 ## Usage
