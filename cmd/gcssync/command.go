@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/codegangsta/cli"
 	"github.com/consulted/gcssync"
+	"github.com/dustin/go-humanize"
 	"os"
 	"path/filepath"
 )
@@ -15,6 +16,7 @@ const (
 	errorAuthInfo    = iota
 	errorProjectInfo = iota
 	errorClientInit  = iota
+	errorListFiles   = iota
 	errorUploadFiles = iota
 	errorSyncFiles   = iota
 )
@@ -159,7 +161,16 @@ func getClient(c *cli.Context) *gcssync.Client {
 
 func listFiles(c *cli.Context) {
 	client := getClient(c)
-	client.ListFiles()
+	files, err := client.ListFiles()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(errorListFiles)
+		return
+	}
+	fmt.Printf("Objects in %s\n", client.GetBucketname())
+	for _, object := range files.Items {
+		fmt.Printf("%s %s\n", object.Name, humanize.Bytes(object.Size))
+	}
 }
 
 func uploadFile(c *cli.Context) {

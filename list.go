@@ -1,20 +1,16 @@
 package gcssync
 
 import (
+	"code.google.com/p/google-api-go-client/storage/v1"
 	"fmt"
-	"github.com/dustin/go-humanize"
 )
 
-func (c *Client) ListFiles() {
+func (c *Client) ListFiles() (*storage.Objects, error) {
 
 	if res, err := c.service.Objects.List(c.bucketName).Do(); err == nil {
-		fmt.Printf("Objects in bucket %s (%s):\n", c.bucketName, c.projectId)
-		// fmt.Println(res.NextPageToken)
-		for _, object := range res.Items {
-			fmt.Printf("%s %s\n", object.Name, humanize.Bytes(object.Size))
-		}
+		return res, nil
 	} else {
-		fmt.Printf("Objects.List failed: %s\n", err.Error())
+		return nil, fmt.Errorf("Could not fetch object list: %s", err.Error())
 	}
 
 }
