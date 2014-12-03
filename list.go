@@ -11,7 +11,7 @@ func (c *Client) ListFiles() {
 		fmt.Printf("Objects in bucket %s (%s):\n", c.bucketName, c.projectId)
 		// fmt.Println(res.NextPageToken)
 		for _, object := range res.Items {
-			fmt.Printf("%s %s %s\n", object.Name, humanize.Bytes(object.Size), object.SelfLink)
+			fmt.Printf("%s %s\n", object.Name, humanize.Bytes(object.Size))
 		}
 	} else {
 		fmt.Printf("Objects.List failed: %s\n", err.Error())
