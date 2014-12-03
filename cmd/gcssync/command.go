@@ -167,7 +167,7 @@ func listFiles(c *cli.Context) {
 		os.Exit(errorListFiles)
 		return
 	}
-	fmt.Printf("Objects in %s\n", client.GetBucketname())
+	fmt.Printf("Objects in %s - %d\n", client.GetBucketname(), len(files.Items))
 	for _, object := range files.Items {
 		fmt.Printf("%s %s\n", object.Name, humanize.Bytes(object.Size))
 	}
