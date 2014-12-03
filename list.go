@@ -9,6 +9,7 @@ const (
 	objectCapacity = 1000
 )
 
+// ListFiles returns all files in the connected bucket
 func (c *Client) ListFiles() ([]*storage.Object, error) {
 	result := make([]*storage.Object, 0, objectCapacity)
 	next := ""
