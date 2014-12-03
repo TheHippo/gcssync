@@ -7,21 +7,25 @@ import (
 	"net/http"
 )
 
+// ServiceConfig holds all informations about the bucket and project
 type ServiceConfig struct {
 	ProjectID  string
 	BucketName string
 }
 
+// Client is connected to Google Cloud Storage bucket
 type Client struct {
 	service    *storage.Service
 	projectId  string
 	bucketName string
 }
 
+// GetBucketName return the name of the bucket the client is connected to
 func (c *Client) GetBucketname() string {
 	return c.bucketName
 }
 
+// NewClient connects to and authenficates against Google Cloud Storage
 func NewClient(oauthConfig *oauth.Config, authCode string, serviceConfig *ServiceConfig) (*Client, error) {
 	transport := &oauth.Transport{
 		Config:    oauthConfig,
