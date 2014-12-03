@@ -1,6 +1,7 @@
 package gcssync
 
 import (
+	"code.google.com/p/google-api-go-client/storage/v1"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -58,6 +59,34 @@ func getLocalFiles(dirname string) []fileInfo {
 
 func (c *Client) SyncFolder(from, to string) {
 	fmt.Println(from, to)
-	localfiles := getLocalFiles(from)
-	fmt.Printf("Found %d local files\n", len(localfiles))
+	var localFiles []fileInfo
+	var listsFetched sync.WaitGroup
+
+	listsFetched.Add(1)
+	go func() {
+		localFiles = getLocalFiles(from)
+		fmt.Println("Done local")
+		listsFetched.Done()
+	}()
+
+	var objects *storage.Objects
+	var err error
+
+	listsFetched.Add(1)
+	go func() {
+		objects, err = c.ListFiles()
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println("Done remote")
+		listsFetched.Done()
+	}()
+
+	listsFetched.Wait()
+	fmt.Printf("Found %d local files\n", len(localFiles))
+	fmt.Printf("Found %d remote files\n", len(objects.Items))
+
+	// for _, file := range localfiles {
+	// 	fmt.Println(file.path)
+	// }
 }
