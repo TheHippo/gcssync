@@ -4,7 +4,6 @@ import (
 	"code.google.com/p/google-api-go-client/storage/v1"
 	"fmt"
 	"github.com/dustin/go-humanize"
-	// "github.com/dustin/go-humanize"
 	"os"
 	"path/filepath"
 	"sync"
