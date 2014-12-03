@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
 )
 
 const (
@@ -65,7 +66,6 @@ func (c *Client) SyncFolder(from, to string) {
 	listsFetched.Add(1)
 	go func() {
 		localFiles = getLocalFiles(from)
-		fmt.Println("Done local")
 		listsFetched.Done()
 	}()
 
@@ -78,15 +78,21 @@ func (c *Client) SyncFolder(from, to string) {
 		if err != nil {
 			fmt.Println(err)
 		}
-		fmt.Println("Done remote")
 		listsFetched.Done()
 	}()
 
 	listsFetched.Wait()
+
 	fmt.Printf("Found %d local files\n", len(localFiles))
 	fmt.Printf("Found %d remote files\n", len(objects.Items))
 
-	// for _, file := range localfiles {
-	// 	fmt.Println(file.path)
-	// }
+	remoteCache := make(map[string]time.Time, len(objects.Items))
+
+	for _, object := range objects.Items {
+		time, err := time.Parse(time.RFC3339, object.Updated)
+		if err != nil {
+			continue
+		}
+		remoteCache[object.Name] = time
+	}
 }
