@@ -4,6 +4,7 @@ import (
 	"code.google.com/p/google-api-go-client/storage/v1"
 	"fmt"
 	"github.com/dustin/go-humanize"
+	// "github.com/dustin/go-humanize"
 	"os"
 	"path/filepath"
 	"sync"
@@ -71,7 +72,7 @@ func (c *Client) SyncFolder(from, to string) {
 		listsFetched.Done()
 	}()
 
-	var objects *storage.Objects
+	var objects []*storage.Object
 	var err error
 
 	listsFetched.Add(1)
@@ -86,11 +87,11 @@ func (c *Client) SyncFolder(from, to string) {
 	listsFetched.Wait()
 
 	fmt.Printf("Found %d local files\n", len(localFiles))
-	fmt.Printf("Found %d remote files\n", len(objects.Items))
+	fmt.Printf("Found %d remote files\n", len(objects))
 
-	remoteCache := make(map[string]time.Time, len(objects.Items))
+	remoteCache := make(map[string]time.Time, len(objects))
 
-	for _, object := range objects.Items {
+	for _, object := range objects {
 		time, err := time.Parse(time.RFC3339, object.Updated)
 		if err != nil {
 			continue
@@ -136,6 +137,10 @@ func (c *Client) SyncFolder(from, to string) {
 				file, more := <-uploadFile
 				if more {
 					success, object, err := c.UploadFile(filepath.Join(from, file.path), file.path)
+					if err != nil {
+						fmt.Println(err)
+						fmt.Println(object.Name)
+					}
 					if err != nil || success == false {
 						fmt.Println(err)
 					} else {
@@ -151,6 +156,6 @@ func (c *Client) SyncFolder(from, to string) {
 
 	uploadDone.Wait()
 
-	fmt.Println(len(toDo))
-	fmt.Println(already, created, update)
+	fmt.Printf("Todo: %d\n", len(toDo))
+	fmt.Printf("Already uploaded: %d, newly created: %d, updated: %d\n", already, created, update)
 }

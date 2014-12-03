@@ -159,10 +159,10 @@ func listFiles(c *cli.Context) {
 		os.Exit(errorListFiles)
 		return
 	}
-	fmt.Printf("Objects in %s - %d\n", client.GetBucketname(), len(files.Items))
-	for _, object := range files.Items {
+	for _, object := range files {
 		fmt.Printf("%s %s\n", object.Name, humanize.Bytes(object.Size))
 	}
+	fmt.Printf("Objects in %s - %d\n", client.GetBucketname(), len(files))
 }
 
 func uploadFile(c *cli.Context) {
