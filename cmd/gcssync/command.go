@@ -22,6 +22,10 @@ const (
 )
 
 const (
+	version = "0.1.0"
+)
+
+const (
 	scope       = storage.DevstorageFull_controlScope
 	authURL     = "https://accounts.google.com/o/oauth2/auth"
 	tokenURL    = "https://accounts.google.com/o/oauth2/token"
@@ -33,6 +37,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "gcssync"
 	app.Usage = "Sync files with Google Cloud Storage"
+	app.Version = version
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:   "cachefile",
