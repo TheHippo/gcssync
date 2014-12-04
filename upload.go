@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+// UploadFile uploads one to local file to the bucket and makes it public readable
 func (c *Client) UploadFile(localName, targetName string) (bool, *storage.Object, error) {
 	if _, err := os.Stat(localName); err != nil {
 		return false, nil, fmt.Errorf("Local file %s not accessible", localName)
@@ -28,7 +29,6 @@ func (c *Client) UploadFile(localName, targetName string) (bool, *storage.Object
 
 	if res, err := c.service.Objects.Insert(c.bucketName, object).Media(file).Do(); err == nil {
 		return true, res, nil
-	} else {
-		return false, nil, fmt.Errorf("Error while uploading file: %s", err.Error())
 	}
+	return false, nil, fmt.Errorf("Error while uploading file: %s", err.Error())
 }

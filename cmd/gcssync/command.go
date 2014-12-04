@@ -22,7 +22,7 @@ const (
 )
 
 const (
-	version = "0.1.0"
+	version = "0.1.1"
 )
 
 const (
@@ -100,8 +100,8 @@ func main() {
 }
 
 func generateOAuthConfig(c *cli.Context) (*oauth.Config, error) {
-	clientId := c.GlobalString("clientid")
-	if clientId == "" {
+	clientID := c.GlobalString("clientid")
+	if clientID == "" {
 		return &oauth.Config{}, fmt.Errorf("Could not find Client ID")
 	}
 	clientSecret := c.GlobalString("clientsecret")
@@ -110,7 +110,7 @@ func generateOAuthConfig(c *cli.Context) (*oauth.Config, error) {
 	}
 
 	return &oauth.Config{
-		ClientId:     clientId,
+		ClientId:     clientID,
 		ClientSecret: clientSecret,
 		Scope:        scope,
 		AuthURL:      authURL,

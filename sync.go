@@ -6,6 +6,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 )
@@ -13,7 +14,7 @@ import (
 const (
 	fileWalkerBufferSize = 20
 	fileWalkerEstimate   = 500
-	uploadGoroutinesNum  = 10
+	uploadGoroutinesNum  = 20
 )
 
 type fileInfo struct {
@@ -60,8 +61,10 @@ func getLocalFiles(dirname string) []fileInfo {
 	return result
 }
 
+// SyncFolder uploads all files from a local directory to a bucket
+// files will be skipped if there are already on that bucket and the local
+// version is older than the version on the bucket
 func (c *Client) SyncFolder(from, to string) {
-	fmt.Println(from, to)
 	var localFiles []fileInfo
 	var listsFetched sync.WaitGroup
 
@@ -129,7 +132,7 @@ func (c *Client) SyncFolder(from, to string) {
 		uploadDone.Done()
 	}()
 
-	var transferedBytes uint64 = 0
+	var transferedBytes uint64
 	transfered := make(chan uint64)
 
 	go func() {
@@ -144,7 +147,11 @@ func (c *Client) SyncFolder(from, to string) {
 			for {
 				file, more := <-uploadFile
 				if more {
-					success, object, err := c.UploadFile(filepath.Join(from, file.path), file.path)
+					toPath := fmt.Sprintf("%s/%s", to, file.path)
+					if strings.HasPrefix(toPath, "/") {
+						toPath = toPath[1:]
+					}
+					success, object, err := c.UploadFile(filepath.Join(from, file.path), toPath)
 					if err != nil {
 						fmt.Println(err)
 						fmt.Println(object.Name)
