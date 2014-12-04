@@ -6,6 +6,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 )
@@ -146,7 +147,11 @@ func (c *Client) SyncFolder(from, to string) {
 			for {
 				file, more := <-uploadFile
 				if more {
-					success, object, err := c.UploadFile(filepath.Join(from, file.path), file.path)
+					toPath := fmt.Sprintf("%s/%s", to, file.path)
+					if strings.HasPrefix(toPath, "/") {
+						toPath = toPath[1:]
+					}
+					success, object, err := c.UploadFile(filepath.Join(from, file.path), toPath)
 					if err != nil {
 						fmt.Println(err)
 						fmt.Println(object.Name)
