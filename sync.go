@@ -13,7 +13,7 @@ import (
 const (
 	fileWalkerBufferSize = 20
 	fileWalkerEstimate   = 500
-	uploadGoroutinesNum  = 10
+	uploadGoroutinesNum  = 20
 )
 
 type fileInfo struct {
