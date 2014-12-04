@@ -64,7 +64,6 @@ func getLocalFiles(dirname string) []fileInfo {
 // files will be skipped if there are already on that bucket and the local
 // version is older than the version on the bucket
 func (c *Client) SyncFolder(from, to string) {
-	fmt.Println(from, to)
 	var localFiles []fileInfo
 	var listsFetched sync.WaitGroup
 
