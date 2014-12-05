@@ -1,6 +1,10 @@
 {
 	"ImportPath": "github.com/TheHippo/gcssync",
 	"GoVersion": "go1.3.3",
+	"Packages": [
+		"github.com/TheHippo/gcssync",
+		"github.com/TheHippo/gcssync/cmd/gcssync"
+	],
 	"Deps": [
 		{
 			"ImportPath": "code.google.com/p/goauth2/oauth",
@@ -16,6 +20,11 @@
 			"ImportPath": "code.google.com/p/google-api-go-client/storage/v1",
 			"Comment": "release-101",
 			"Rev": "e1c259484b495133836706f46319f5897f1e9bf6"
+		},
+		{
+			"ImportPath": "github.com/codegangsta/cli",
+			"Comment": "1.2.0-22-g687db20",
+			"Rev": "687db20fc379d1686465a28e9959707cd1acc990"
 		},
 		{
 			"ImportPath": "github.com/dustin/go-humanize",
